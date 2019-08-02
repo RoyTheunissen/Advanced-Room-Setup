@@ -1,0 +1,16 @@
+{
+  "source": "Unity",
+  "applications": [
+    {
+      "app_key": "application.generated.unity.advancedroomsetup.exe",
+      "launch_type": "url",
+      "url": "steam://launch/",
+      "action_manifest_path": "C:\\Git\\AdvancedRoomSetup\\actions.json",
+      "strings": {
+        "en_us": {
+          "name": "AdvancedRoomSetup [Testing]"
+        }
+      }
+    }
+  ]
+}
