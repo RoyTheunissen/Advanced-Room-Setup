@@ -8,6 +8,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine;
 using Valve.VR;
 
 namespace Valve.VR
@@ -4966,6 +4967,48 @@ public enum EIOBufferMode
 	public float m9;
 	public float m10;
 	public float m11;
+
+	public static implicit operator Matrix4x4(HmdMatrix34_t pose)
+	{
+		Matrix4x4 result = Matrix4x4.identity;
+
+		result[0, 0] = pose.m0;
+		result[0, 1] = pose.m1;
+		result[0, 2] = -pose.m2;
+		result[0, 3] = pose.m3;
+
+		result[1, 0] = pose.m4;
+		result[1, 1] = pose.m5;
+		result[1, 2] = -pose.m6;
+		result[1, 3] = pose.m7;
+
+		result[2, 0] = -pose.m8;
+		result[2, 1] = -pose.m9;
+		result[2, 2] = pose.m10;
+		result[2, 3] = -pose.m11;
+		
+		return result;
+	}
+	
+	public static implicit operator HmdMatrix34_t(Matrix4x4 pose)
+	{
+		HmdMatrix34_t result = new HmdMatrix34_t
+		{
+			m0 = pose[0, 0],
+			m1 = pose[0, 1],
+			m2 = -pose[0, 2],
+			m3 = pose[0, 3],
+			m4 = pose[1, 0],
+			m5 = pose[1, 1],
+			m6 = -pose[1, 2],
+			m7 = pose[1, 3],
+			m8 = -pose[2, 0],
+			m9 = -pose[2, 1],
+			m10 = pose[2, 2],
+			m11 = -pose[2, 3]
+		};
+		return result;
+	}
 }
 [StructLayout(LayoutKind.Sequential)] public struct HmdMatrix33_t
 {
@@ -5003,6 +5046,26 @@ public enum EIOBufferMode
 	public float v0; //float[3]
 	public float v1;
 	public float v2;
+
+	public static implicit operator Vector3(HmdVector3_t v)
+	{
+		return new Vector3(v.v0, v.v1, v.v2);
+	}
+	
+	public static implicit operator HmdVector3_t(Vector3 v)
+	{
+		return new HmdVector3_t
+		{
+			v0 = v.x,
+			v1 = v.y,
+			v2 = v.z,
+		};
+	}
+
+	public override string ToString()
+	{
+		return $"({v0}, {v1}, {v2})";
+	}
 }
 [StructLayout(LayoutKind.Sequential)] public struct HmdVector4_t
 {
@@ -5049,6 +5112,11 @@ public enum EIOBufferMode
 	public HmdVector3_t vCorners1;
 	public HmdVector3_t vCorners2;
 	public HmdVector3_t vCorners3;
+	
+	public override string ToString()
+	{
+		return $"({vCorners0}, {vCorners1}, {vCorners2}, {vCorners3})";
+	}
 }
 [StructLayout(LayoutKind.Sequential)] public struct HmdRect2_t
 {
