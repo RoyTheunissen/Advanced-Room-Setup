@@ -11,11 +11,19 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     [Serializable]
     public class ChaperoneQuad
     {
-        private const float DefaultHeight = 3.0f;
+        /// <summary>
+        /// This is 8 feet. Measured from my own chaperone that came out of SteamVR.
+        /// </summary>
+        private const float DefaultHeight = 2.4384f;
         
         private Vector3 from;
+        public Vector3 From => @from;
+
         private Vector3 to;
+        public Vector3 To => to;
+
         private float height;
+        public float Height => height;
 
         private Matrix4x4 Matrix
         {
