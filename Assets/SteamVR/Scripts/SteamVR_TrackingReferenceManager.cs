@@ -6,6 +6,8 @@ namespace Valve.VR
 {
     public class SteamVR_TrackingReferenceManager : MonoBehaviour
     {
+        [SerializeField] private Shader shader;
+        
         private Dictionary<uint, TrackingReferenceObject> trackingReferences = new Dictionary<uint, TrackingReferenceObject>();
 
         private void OnEnable()
@@ -39,6 +41,7 @@ namespace Valve.VR
                         trackingReference.renderModel = trackingReference.gameObject.AddComponent<SteamVR_RenderModel>();
                         trackingReference.renderModel.createComponents = false;
                         trackingReference.renderModel.updateDynamically = false;
+                        trackingReference.renderModel.shader = shader;
 
                         trackingReferences.Add(deviceIndex, trackingReference);
 
