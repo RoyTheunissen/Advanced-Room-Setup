@@ -16,12 +16,34 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         public void Initialize(Chaperone chaperone)
         {
             this.chaperone = chaperone;
+
+            chaperone.PerimeterChangedEvent += HandlePerimeterChangedEvent;
             
+            UpdateVisuals();
+        }
+
+        private void OnDestroy()
+        {
+            if (chaperone != null)
+                chaperone.PerimeterChangedEvent -= HandlePerimeterChangedEvent;
+        }
+
+        private void HandlePerimeterChangedEvent()
+        {
+            UpdateVisuals();
+        }
+
+        private void UpdateVisuals()
+        {
             Vector3[] positions = chaperone.Perimeter.ToArray();
             lineRenderer.positionCount = positions.Length;
             lineRenderer.SetPositions(positions);
 
             playAreaRectangle.localScale = new Vector3(chaperone.Size.x, 1.0f, chaperone.Size.y);
+
+            playAreaArrow.gameObject.SetActive(
+                !Mathf.Approximately(chaperone.Size.x, 0.0f) &&
+                !Mathf.Approximately(chaperone.Size.y, 0.0f));
         }
     }
 }

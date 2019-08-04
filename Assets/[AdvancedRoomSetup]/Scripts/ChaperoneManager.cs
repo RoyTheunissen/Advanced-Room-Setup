@@ -9,23 +9,37 @@ namespace RoyTheunissen.AdvancedRoomSetup
     public sealed class ChaperoneManager : MonoBehaviour
     {
         [SerializeField] private ChaperoneRenderer chaperoneRendererPrefab;
+        [SerializeField] private Transform controllerLeft;
+        [SerializeField] private Transform controllerRight;
 
-        private ChaperoneRenderer chaperoneRenderer;
+        private ChaperoneRenderer chaperoneRendererWorking;
+        private ChaperoneRenderer chaperoneRendererNew;
         
-        private Chaperone chaperone;
+        private Chaperone chaperoneWorking;
+        private Chaperone chaperoneNew;
         
         private void Awake()
         {
-            chaperone = new Chaperone();
-            chaperone.LoadFromWorkingFile();
+            chaperoneWorking = new Chaperone();
+            chaperoneWorking.LoadFromWorkingFile();
 
-            chaperoneRenderer = Instantiate(chaperoneRendererPrefab);
-            chaperoneRenderer.Initialize(chaperone);
+            chaperoneRendererWorking = Instantiate(chaperoneRendererPrefab);
+            chaperoneRendererWorking.Initialize(chaperoneWorking);
+            chaperoneRendererWorking.gameObject.SetActive(false);
+            
+            chaperoneNew = new Chaperone();
+            chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
+            chaperoneRendererNew.Initialize(chaperoneNew);
+        }
+
+        private void Update()
+        {
+            chaperoneNew.SetViaExtremities(controllerLeft.position, controllerRight.position);
         }
 
         private void OnDrawGizmos()
         {
-            chaperone?.DrawGizmos();
+            chaperoneWorking?.DrawGizmos();
         }
     }
 }

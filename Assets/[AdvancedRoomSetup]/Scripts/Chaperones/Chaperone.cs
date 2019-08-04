@@ -15,6 +15,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         
         private Vector2 size;
         public Vector2 Size => size;
+        
+        public delegate void PerimeterChangedHandler();
+        public event PerimeterChangedHandler PerimeterChangedEvent;
 
         public void LoadFromWorkingFile()
         {
@@ -67,6 +70,20 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             
             // Commit the working copy to the live environment.
             OpenVR.ChaperoneSetup.CommitWorkingCopy(EChaperoneConfigFile.Live);
+        }
+
+        public void SetViaExtremities(Vector3 a, Vector3 b)
+        {
+            Vector3 min = new Vector3(Mathf.Min(a.x, b.x), 0.0f, Mathf.Min(a.z, b.z));
+            Vector3 max = new Vector3(Mathf.Max(a.x, b.x), 0.0f, Mathf.Max(a.z, b.z));
+
+            perimeter.Clear();
+            perimeter.Add(new Vector3(min.x, 0.0f, min.z));
+            perimeter.Add(new Vector3(max.x, 0.0f, min.z));
+            perimeter.Add(new Vector3(max.x, 0.0f, max.z));
+            perimeter.Add(new Vector3(min.x, 0.0f, max.z));
+            
+            PerimeterChangedEvent?.Invoke();
         }
         
         public void DrawGizmos()
