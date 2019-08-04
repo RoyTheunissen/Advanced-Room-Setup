@@ -9,9 +9,12 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     public class Chaperone
     {
         [SerializeField] private List<Vector3> perimeter = new List<Vector3>();
+        public List<Vector3> Perimeter => perimeter;
 
         private Matrix4x4 origin;
+        
         private Vector2 size;
+        public Vector2 Size => size;
 
         public void LoadFromWorkingFile()
         {
