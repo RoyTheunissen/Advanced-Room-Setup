@@ -1,7 +1,6 @@
-using RoyTheunissen.AdvancedRoomSetup.Chaperones;
 using UnityEngine;
 
-namespace RoyTheunissen.AdvancedRoomSetup
+namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 {
     /// <summary>
     /// Helps interpret and manipulate chaperone data as it comes from OpenVR.
