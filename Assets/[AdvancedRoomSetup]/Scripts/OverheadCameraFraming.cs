@@ -10,6 +10,14 @@ namespace RoyTheunissen.AdvancedRoomSetup
     /// </summary>
     public sealed class OverheadCameraFraming : MonoBehaviour
     {
+        public enum FramingType
+        {
+            Transforms,
+            TransformsAndChildren,
+            ChildrenOnly,
+        }
+
+        [SerializeField] private FramingType framingType;
         [SerializeField] private float cameraSizeMin = 5.0f;
         [SerializeField] private float cameraPadding = 1.0f;
         
@@ -19,27 +27,32 @@ namespace RoyTheunissen.AdvancedRoomSetup
         [SerializeField] private new Camera camera;
 
         private Bounds bounds;
+        private bool isInitialized;
+
+        private void Encapsulate(Vector3 position)
+        {
+            if (!isInitialized)
+            {
+                bounds.center = position;
+                bounds.size = Vector3.zero;
+                isInitialized = true;
+            }
+            else
+                bounds.Encapsulate(position);
+        }
 
         private void LateUpdate()
         {
-            bounds.center = transformsToFrame[0].position;
-            bounds.size = Vector3.zero;
-
-            bool didInitialize = false;
+            isInitialized = false;
             for (int i = 0; i < transformsToFrame.Count; i++)
             {
-                if (!didInitialize)
-                {
-                    bounds.center = transformsToFrame[i].position;
-                    bounds.size = Vector3.zero;
-                    didInitialize = true;
-                }
-                else
-                    bounds.Encapsulate(transformsToFrame[i].position);
+                if (framingType != FramingType.ChildrenOnly)
+                    Encapsulate(transformsToFrame[i].position);
                 
                 for (int j = 0; j < transformsToFrame[i].childCount; j++)
                 {
-                    bounds.Encapsulate(transformsToFrame[i].GetChild(j).position);
+                    if (framingType != FramingType.Transforms)
+                        Encapsulate(transformsToFrame[i].GetChild(j).position);
                 }
             }
             
