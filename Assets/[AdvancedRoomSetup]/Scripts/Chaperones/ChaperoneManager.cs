@@ -29,7 +29,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
             chaperoneRendererWorking = Instantiate(chaperoneRendererPrefab);
             chaperoneRendererWorking.Initialize(chaperoneWorking);
-            chaperoneRendererWorking.Active = false;
             
             chaperoneNew = new Chaperone();
             chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
@@ -40,7 +39,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             chaperoneNew.SetViaExtremities(controllerLeft.position, controllerRight.position);
 
-            chaperoneRendererWorking.Active = !newChaperoneButton.IsHovered;
+            chaperoneRendererWorking.Opacity = newChaperoneButton.IsHovered ? 0.05f : 1.0f;
             chaperoneRendererNew.Active = newChaperoneButton.IsHovered;
         }
 

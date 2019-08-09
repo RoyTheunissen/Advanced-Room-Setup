@@ -10,6 +10,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private LineRenderer lineRenderer;
         [SerializeField] private Transform playAreaRectangle;
         [SerializeField] private Transform playAreaArrow;
+        
+        [SerializeField] private Renderer[] fadeableRenderers;
 
         private Chaperone chaperone;
 
@@ -17,6 +19,22 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             get => gameObject.activeSelf;
             set => gameObject.SetActive(value);
+        }
+
+        private float cachedOpacity = 1.0f;
+        public float Opacity
+        {
+            get => cachedOpacity;
+            set
+            {
+                cachedOpacity = value;
+
+                for (int i = 0; i < fadeableRenderers.Length; i++)
+                {
+                    fadeableRenderers[i].material.color =
+                        fadeableRenderers[i].material.color.Fade(cachedOpacity);
+                }
+            }
         }
 
         public void Initialize(Chaperone chaperone)
