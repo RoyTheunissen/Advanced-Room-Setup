@@ -13,6 +13,12 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         private Chaperone chaperone;
 
+        public bool Active
+        {
+            get => gameObject.activeSelf;
+            set => gameObject.SetActive(value);
+        }
+
         public void Initialize(Chaperone chaperone)
         {
             this.chaperone = chaperone;

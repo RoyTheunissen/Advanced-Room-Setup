@@ -1,4 +1,7 @@
+using RoyTheunissen.AdvancedRoomSetup.UI;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 {
@@ -10,6 +13,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private ChaperoneRenderer chaperoneRendererPrefab;
         [SerializeField] private Transform controllerLeft;
         [SerializeField] private Transform controllerRight;
+        
+        [SerializeField] private AdvancedCalibrationButton newChaperoneButton;
 
         private ChaperoneRenderer chaperoneRendererWorking;
         private ChaperoneRenderer chaperoneRendererNew;
@@ -24,7 +29,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
             chaperoneRendererWorking = Instantiate(chaperoneRendererPrefab);
             chaperoneRendererWorking.Initialize(chaperoneWorking);
-            chaperoneRendererWorking.gameObject.SetActive(false);
+            chaperoneRendererWorking.Active = false;
             
             chaperoneNew = new Chaperone();
             chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
@@ -34,6 +39,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private void Update()
         {
             chaperoneNew.SetViaExtremities(controllerLeft.position, controllerRight.position);
+
+            chaperoneRendererWorking.Active = !newChaperoneButton.IsHovered;
+            chaperoneRendererNew.Active = newChaperoneButton.IsHovered;
         }
 
         private void OnDrawGizmos()
