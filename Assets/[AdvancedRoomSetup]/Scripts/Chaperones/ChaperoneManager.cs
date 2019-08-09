@@ -14,6 +14,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private Transform controllerLeft;
         [SerializeField] private Transform controllerRight;
         
+        [SerializeField] private OverheadCameraFraming overheadCameraFraming;
         [SerializeField] private AdvancedCalibrationButton newChaperoneButton;
 
         private ChaperoneRenderer chaperoneRendererWorking;
@@ -37,9 +38,12 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         private void Update()
         {
-            chaperoneNew.SetViaExtremities(controllerLeft, controllerRight);
-
+            overheadCameraFraming.transform.rotation = Quaternion.Euler(
+                0.0f, chaperoneWorking.Origin.rotation.eulerAngles.y, 0.0f);
+            
             chaperoneRendererWorking.Opacity = newChaperoneButton.IsHovered ? 0.05f : 1.0f;
+            
+            chaperoneNew.SetViaExtremities(controllerLeft, controllerRight);
             chaperoneRendererNew.Active = newChaperoneButton.IsHovered;
         }
 

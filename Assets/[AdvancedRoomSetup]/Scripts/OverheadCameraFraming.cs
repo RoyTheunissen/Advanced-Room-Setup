@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Numerics;
 using UnityEngine;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
 namespace RoyTheunissen.AdvancedRoomSetup
@@ -26,19 +28,24 @@ namespace RoyTheunissen.AdvancedRoomSetup
         [Header("Dependencies")]
         [SerializeField] private new Camera camera;
 
-        private Bounds bounds;
+        private Bounds boundsLocal;
         private bool isInitialized;
 
         private void Encapsulate(Vector3 position)
         {
+            Vector3 positionLocal = transform.InverseTransformPoint(position);
+            
             if (!isInitialized)
             {
-                bounds.center = position;
-                bounds.size = Vector3.zero;
+                boundsLocal.center = positionLocal;
+                boundsLocal.size = Vector3.zero;
+                
                 isInitialized = true;
             }
             else
-                bounds.Encapsulate(position);
+            {
+                boundsLocal.Encapsulate(positionLocal);
+            }
         }
 
         private void LateUpdate()
@@ -56,13 +63,27 @@ namespace RoyTheunissen.AdvancedRoomSetup
                 }
             }
             
-            bounds.Expand(cameraPadding);
+            transform.position = transform.TransformPoint(boundsLocal.center);
 
-            camera.transform.position = new Vector3(
-                bounds.center.x, camera.transform.position.y, bounds.center.z);
-
+            boundsLocal.Expand(cameraPadding);
             camera.orthographicSize = Mathf.Max(cameraSizeMin, 
-                bounds.extents.x, bounds.extents.y, bounds.extents.z);
+                boundsLocal.extents.x, 0.0f, boundsLocal.extents.z);
+        }
+        
+        private void OnDrawGizmos()
+        {
+            Matrix4x4 originalMatrix = Gizmos.matrix;
+            Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, boundsLocal.extents);
+
+            Gizmos.color = Color.black.Fade(0.25f);
+            Gizmos.DrawRay(new Vector3(0, 0, 0), new Vector3(0, 0, 1));
+            
+            Gizmos.color = Color.yellow.Fade(0.25f);
+            Gizmos.DrawLine(new Vector3(-1, 0, -1), new Vector3(1, 0, -1));
+            Gizmos.DrawLine(new Vector3(-1, 0, 1), new Vector3(1, 0, 1));
+            Gizmos.DrawLine(new Vector3(-1, 0, -1), new Vector3(-1, 0, 1));
+            Gizmos.DrawLine(new Vector3(1, 0, -1), new Vector3(1, 0, 1));
+            Gizmos.matrix = originalMatrix;
         }
     }
 }
