@@ -37,7 +37,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         private void Update()
         {
-            chaperoneNew.SetViaExtremities(controllerLeft.position, controllerRight.position);
+            chaperoneNew.SetViaExtremities(controllerLeft, controllerRight);
 
             chaperoneRendererWorking.Opacity = newChaperoneButton.IsHovered ? 0.05f : 1.0f;
             chaperoneRendererNew.Active = newChaperoneButton.IsHovered;

@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 {
@@ -11,8 +15,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private List<Vector3> perimeter = new List<Vector3>();
         public List<Vector3> Perimeter => perimeter;
 
-        private Matrix4x4 origin;
-        
+        private Matrix4x4 origin = Matrix4x4.identity;
+        public Matrix4x4 Origin => origin;
+
         private Vector2 size;
         public Vector2 Size => size;
         
@@ -72,16 +77,31 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             OpenVR.ChaperoneSetup.CommitWorkingCopy(EChaperoneConfigFile.Live);
         }
 
-        public void SetViaExtremities(Vector3 a, Vector3 b)
+        public void SetViaExtremities(Transform a, Transform b)
         {
-            Vector3 min = new Vector3(Mathf.Min(a.x, b.x), 0.0f, Mathf.Min(a.z, b.z));
-            Vector3 max = new Vector3(Mathf.Max(a.x, b.x), 0.0f, Mathf.Max(a.z, b.z));
+            Quaternion rotationA = Quaternion.Euler(new Vector3(0.0f, a.eulerAngles.y, 0.0f));
+            Quaternion rotationB = Quaternion.Euler(new Vector3(0.0f, b.eulerAngles.y, 0.0f));
+            Quaternion rotation = Quaternion.Slerp(rotationA, rotationB, 0.5f);
+            
+            Vector3 center = (a.position + b.position) / 2;
 
+            origin = Matrix4x4.TRS(center, rotation, Vector3.one);
+            
+            Debug.DrawRay(origin.GetPosition(), origin.rotation * Vector3.forward, Color.cyan);
+
+            Vector3 localPosA = origin.inverse.MultiplyPoint(a.position);
+            Vector3 localPosB = origin.inverse.MultiplyPoint(b.position);
+            
+            Vector3 min = Vector3.Min(localPosA, localPosB);
+            Vector3 max = Vector3.Max(localPosA, localPosB);
+            
             perimeter.Clear();
             perimeter.Add(new Vector3(min.x, 0.0f, min.z));
             perimeter.Add(new Vector3(max.x, 0.0f, min.z));
             perimeter.Add(new Vector3(max.x, 0.0f, max.z));
             perimeter.Add(new Vector3(min.x, 0.0f, max.z));
+
+            size = new Vector2(max.x - min.x, max.z - min.z);
             
             PerimeterChangedEvent?.Invoke();
         }
@@ -94,20 +114,30 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             Gizmos.color = Color.red;
             DrawPlayArea();
             
+            DrawPerimeter();
+        }
+
+        private void DrawPerimeter()
+        {
+            Matrix4x4 originalMatrix = Gizmos.matrix;
+            Gizmos.matrix = origin;
+            
             // Draw all of the positions.
             Gizmos.color = Color.green;
             Vector3 previous = Vector3.zero;
             if (perimeter.Count > 0)
                 previous = perimeter[perimeter.Count - 1];
-            
+
             for (int i = 0; i < perimeter.Count; i++)
             {
                 Gizmos.DrawLine(previous, perimeter[i]);
-                
+
                 previous = perimeter[i];
             }
+            
+            Gizmos.matrix = originalMatrix;
         }
-        
+
         private void DrawPose(Matrix4x4 matrix, float length)
         {
             Matrix4x4 originalmatrix = Gizmos.matrix;
@@ -127,7 +157,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             Matrix4x4 originalMatrix = Gizmos.matrix;
             Gizmos.matrix = Matrix4x4.TRS(
-                Vector3.zero, Quaternion.identity, new Vector3(size.x, 0.0f, size.y) / 2);
+                origin.GetPosition(), origin.rotation, new Vector3(size.x, 0.0f, size.y) / 2);
             Gizmos.DrawLine(new Vector3(-1, 0, -1), new Vector3(1, 0, -1));
             Gizmos.DrawLine(new Vector3(-1, 0, 1), new Vector3(1, 0, 1));
             Gizmos.DrawLine(new Vector3(-1, 0, -1), new Vector3(-1, 0, 1));
