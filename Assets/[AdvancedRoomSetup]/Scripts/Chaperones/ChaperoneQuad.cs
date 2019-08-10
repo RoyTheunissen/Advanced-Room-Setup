@@ -43,9 +43,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             this.height = height;
         }
 
-        public void DrawDebug(Color color, float duration)
+        public void DrawDebug(Matrix4x4 matrix, Color color, float duration)
         {
-            Matrix4x4 matrix = Matrix;
+            matrix *= Matrix;
             Debug.DrawLine(
                 matrix.MultiplyPoint(new Vector3(0, 0, 0)),
                 matrix.MultiplyPoint(new Vector3(0, 0, 1)), color, duration);
@@ -63,7 +63,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         public void DrawGizmo()
         {
             Matrix4x4 originalMatrix = Gizmos.matrix;
-            Gizmos.matrix = Matrix;
+            Gizmos.matrix *= Matrix;
             Gizmos.DrawLine(new Vector3(0, 0, 0), new Vector3(0, 0, 1));
             Gizmos.DrawLine(new Vector3(0, 0, 1), new Vector3(0, 1, 1));
             Gizmos.DrawLine(new Vector3(0, 1, 1), new Vector3(0, 1, 0));

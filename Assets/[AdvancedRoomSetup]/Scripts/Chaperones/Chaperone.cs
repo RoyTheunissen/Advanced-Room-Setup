@@ -63,7 +63,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             for (int i = 0; i < quads.Length; i++)
             {
                 quads[i] = workingColisionBoundsInfo[i];
-                quads[i].DrawDebug(Color.magenta, 10.0f);
+                quads[i].DrawDebug(standingZeroPoseToRawTrackingPose, Color.green, 5.0f);
                 
                 perimeter.Add(quads[i].From);
             }
