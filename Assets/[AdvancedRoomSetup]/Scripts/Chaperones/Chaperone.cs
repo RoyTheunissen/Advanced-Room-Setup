@@ -15,14 +15,31 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private List<Vector3> perimeter = new List<Vector3>();
         public List<Vector3> Perimeter => perimeter;
 
-        private Matrix4x4 origin = Matrix4x4.identity;
+        [SerializeField] private Matrix4x4 origin = Matrix4x4.identity;
         public Matrix4x4 Origin => origin;
 
-        private Vector2 size;
+        [SerializeField] private Vector2 size;
         public Vector2 Size => size;
-        
+
+        [SerializeField] private string name;
+        public string Name => name;
+
         public delegate void PerimeterChangedHandler();
         public event PerimeterChangedHandler PerimeterChangedEvent;
+
+        public Chaperone(string name)
+        {
+            this.name = name;
+        }
+
+        public Chaperone(Chaperone other)
+        {
+            perimeter.AddRange(other.perimeter);
+
+            origin = other.origin;
+            size = other.size;
+            name = other.name;
+        }
 
         public void LoadFromWorkingFile()
         {
@@ -102,6 +119,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             perimeter.Add(new Vector3(min.x, 0.0f, max.z));
 
             size = new Vector2(max.x - min.x, max.z - min.z);
+
+            DateTime dateTime = DateTime.Now;
+            name = dateTime.ToShortDateString() + " " + dateTime.ToShortTimeString();
             
             PerimeterChangedEvent?.Invoke();
         }

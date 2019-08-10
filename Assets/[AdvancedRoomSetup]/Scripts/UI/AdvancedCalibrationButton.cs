@@ -11,6 +11,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
         IPointerExitHandler
     {
         [SerializeField] private Button button;
+        public Button Button => button;
 
         private bool isHovered;
         public bool IsHovered => isHovered;
