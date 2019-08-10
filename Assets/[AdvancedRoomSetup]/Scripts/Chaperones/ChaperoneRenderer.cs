@@ -10,9 +10,11 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     {
         private const float FadeDuration = 0.1f;
         
+        [SerializeField] private GameObject validityContainer;
         [SerializeField] private LineRenderer lineRenderer;
         [SerializeField] private Transform playAreaRectangle;
         [SerializeField] private Transform playAreaArrow;
+        [SerializeField] private float areaSizeMin = 0.5f;
         
         [SerializeField] private float arrowPaddingMin = 0.1f;
         [SerializeField] private float arrowSizeMin = 0.000000001f;
@@ -90,6 +92,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         private void UpdateVisuals()
         {
+            validityContainer.SetActive(chaperone.Size.x > areaSizeMin &&
+                                        chaperone.Size.y > areaSizeMin);
+            
             transform.position = chaperone.Origin.MultiplyPoint(Vector3.zero);
             transform.rotation = chaperone.Origin.rotation;
             
