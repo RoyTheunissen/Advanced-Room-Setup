@@ -24,21 +24,28 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private string name;
         public string Name => name;
 
-        public delegate void PerimeterChangedHandler();
+        public delegate void PerimeterChangedHandler(Chaperone chaperone);
         public event PerimeterChangedHandler PerimeterChangedEvent;
 
         public Chaperone(string name)
         {
             this.name = name;
         }
-
-        public Chaperone(Chaperone other)
+        
+        public Chaperone(string name, Chaperone other) : this(name)
         {
+            CopySettingsFrom(other);
+        }
+
+        public void CopySettingsFrom(Chaperone other)
+        {
+            perimeter.Clear();
             perimeter.AddRange(other.perimeter);
 
             origin = other.origin;
             size = other.size;
-            name = other.name;
+            
+            PerimeterChangedEvent?.Invoke(this);
         }
 
         public void LoadFromWorkingFile()
@@ -119,11 +126,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             perimeter.Add(new Vector3(min.x, 0.0f, max.z));
 
             size = new Vector2(max.x - min.x, max.z - min.z);
-
-            DateTime dateTime = DateTime.Now;
-            name = dateTime.ToShortDateString() + " " + dateTime.ToShortTimeString();
             
-            PerimeterChangedEvent?.Invoke();
+            PerimeterChangedEvent?.Invoke(this);
         }
         
         public void DrawGizmos()

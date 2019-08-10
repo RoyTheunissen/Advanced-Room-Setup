@@ -55,7 +55,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                 chaperone.PerimeterChangedEvent -= HandlePerimeterChangedEvent;
         }
 
-        private void HandlePerimeterChangedEvent()
+        private void HandlePerimeterChangedEvent(Chaperone chaperone)
         {
             UpdateVisuals();
         }
