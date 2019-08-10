@@ -294,7 +294,7 @@ PrefabInstance:
     - target: {fileID: 3033834609923064751, guid: 1da1525f552f75343b8b8322cf6953a2,
         type: 3}
       propertyPath: m_fontSizeBase
-      value: 16
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 3033834609923064751, guid: 1da1525f552f75343b8b8322cf6953a2,
         type: 3}
@@ -330,6 +330,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: 1992-04-23
+      objectReference: {fileID: 0}
+    - target: {fileID: 3033834609923064751, guid: 1da1525f552f75343b8b8322cf6953a2,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 7264102150890475679, guid: 1da1525f552f75343b8b8322cf6953a2,
         type: 3}
