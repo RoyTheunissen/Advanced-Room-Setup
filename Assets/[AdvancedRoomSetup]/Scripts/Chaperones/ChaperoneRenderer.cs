@@ -11,6 +11,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private Transform playAreaRectangle;
         [SerializeField] private Transform playAreaArrow;
         
+        [SerializeField] private float arrowPaddingMin = 0.1f;
+        [SerializeField] private float arrowSizeMin = 0.000000001f;
         [SerializeField] private float arrowSizeMax = 0.5f;
         [SerializeField] private Renderer[] fadeableRenderers;
 
@@ -69,7 +71,11 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
             playAreaRectangle.localScale = new Vector3(chaperone.Size.x, 1.0f, chaperone.Size.y);
 
-            float arrowSize = Mathf.Min(chaperone.Size.x, chaperone.Size.y, arrowSizeMax);
+            float arrowSize = Mathf.Min(
+                chaperone.Size.x - arrowPaddingMin, chaperone.Size.y - arrowPaddingMin,
+                arrowSizeMax);
+            arrowSize = Mathf.Max(arrowSize, arrowSizeMin);
+            
             playAreaArrow.localScale = Vector3.one * arrowSize;
             playAreaArrow.gameObject.SetActive(
                 !Mathf.Approximately(chaperone.Size.x, 0.0f) &&

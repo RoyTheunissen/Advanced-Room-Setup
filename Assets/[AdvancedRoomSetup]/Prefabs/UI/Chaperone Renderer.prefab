@@ -265,6 +265,9 @@ MonoBehaviour:
   lineRenderer: {fileID: 6922325751239684902}
   playAreaRectangle: {fileID: 1667174666256553885}
   playAreaArrow: {fileID: 4307711953047718623}
+  arrowPaddingMin: 0.2
+  arrowSizeMin: 0.000000001
+  arrowSizeMax: 0.5
   fadeableRenderers:
   - {fileID: 4197292641569428262}
   - {fileID: 897243287586827345}
