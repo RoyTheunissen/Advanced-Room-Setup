@@ -9,29 +9,18 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     /// </summary>
     public sealed class ChaperoneManager : MonoBehaviour
     {
-        [SerializeField] private ChaperoneRenderer chaperoneRendererPrefab;
         [SerializeField] private Transform controllerLeft;
         [SerializeField] private Transform controllerRight;
         
-        [Space]
-        [SerializeField] private OverheadCameraFraming overheadCameraFraming;
-
-        // TODO: Move the rendering to a separate class.
-        private ChaperoneRenderer chaperoneRendererWorking;
-        private ChaperoneRenderer chaperoneRendererNew;
         
         private Chaperone chaperoneWorking;
+        public Chaperone ChaperoneWorking => chaperoneWorking;
+
         private Chaperone chaperoneNew;
+        public Chaperone ChaperoneNew => chaperoneNew;
 
         private List<Chaperone> savedChaperones = new List<Chaperone>();
         public List<Chaperone> SavedChaperones => savedChaperones;
-
-        private bool showNewChaperonePreview;
-        public bool ShowNewChaperonePreview
-        {
-            get { return showNewChaperonePreview; }
-            set { showNewChaperonePreview = value; }
-        }
 
         public delegate void SavedChaperonesChangedHandler(ChaperoneManager chaperoneManager);
         public event SavedChaperonesChangedHandler SavedChaperonesChangedEvent;
@@ -40,24 +29,13 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             chaperoneWorking = new Chaperone("Working");
             chaperoneWorking.LoadFromWorkingFile();
-
-            chaperoneRendererWorking = Instantiate(chaperoneRendererPrefab);
-            chaperoneRendererWorking.Initialize(chaperoneWorking);
             
             chaperoneNew = new Chaperone("New");
-            chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
-            chaperoneRendererNew.Initialize(chaperoneNew);
         }
 
         private void Update()
         {
-            overheadCameraFraming.transform.rotation = Quaternion.Euler(
-                0.0f, chaperoneWorking.Origin.rotation.eulerAngles.y, 0.0f);
-            
-            chaperoneRendererWorking.Opacity = showNewChaperonePreview ? 0.05f : 1.0f;
-            
             chaperoneNew.SetViaExtremities(controllerLeft, controllerRight);
-            chaperoneRendererNew.Active = showNewChaperonePreview;
         }
 
         public void SaveNewChaperone()

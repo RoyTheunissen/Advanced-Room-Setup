@@ -17,6 +17,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
         
         [Space]
         [SerializeField] private AdvancedCalibrationButton newChaperoneButton;
+        public AdvancedCalibrationButton NewChaperoneButton => newChaperoneButton;
 
         private List<ChaperoneButton> chaperoneButtons = new List<ChaperoneButton>();
 
@@ -41,11 +42,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
                 chaperoneButtons[i].LoadButtonPressedEvent -= HandleLoadChaperoneButtonPressedEvent;
                 chaperoneButtons[i].DeleteButtonPressedEvent -= HandleDeleteChaperoneButtonPressedEvent;
             }
-        }
-
-        private void Update()
-        {
-            chaperoneManager.ShowNewChaperonePreview = newChaperoneButton.IsHovered;
         }
 
         private void UpdateButtons()
