@@ -1,3 +1,4 @@
+using RoyTheunissen.Scaffolding.Tweening;
 using UnityEngine;
 
 namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
@@ -7,6 +8,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     /// </summary>
     public sealed class ChaperoneRenderer : MonoBehaviour
     {
+        private const float FadeDuration = 0.1f;
+        
         [SerializeField] private LineRenderer lineRenderer;
         [SerializeField] private Transform playAreaRectangle;
         [SerializeField] private Transform playAreaArrow;
@@ -25,7 +28,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         }
 
         private float cachedOpacity = 1.0f;
-        public float Opacity
+        private float Opacity
         {
             get => cachedOpacity;
             set
@@ -38,6 +41,13 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                         fadeableRenderers[i].material.color.Fade(cachedOpacity);
                 }
             }
+        }
+        
+        private Tween opacityTween;
+
+        private void Awake()
+        {
+            opacityTween = new Tween(f => Opacity = f).SkipToIn().SetContinuous(true);
         }
 
         public void Initialize(Chaperone chaperone)
@@ -66,6 +76,16 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private void HandlePerimeterChangedEvent(Chaperone chaperone)
         {
             UpdateVisuals();
+        }
+
+        public void FadeTo(float opacity, bool instant = false)
+        {
+            if (instant)
+            {
+                opacityTween.SkipTo(opacity);
+                return;
+            }
+            opacityTween.TweenTo(opacity, FadeDuration);
         }
 
         private void UpdateVisuals()

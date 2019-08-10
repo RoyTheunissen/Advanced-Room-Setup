@@ -30,11 +30,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             
             chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
             chaperoneRendererNew.Initialize(chaperoneManager.ChaperoneNew);
-            chaperoneRendererNew.Opacity = PreviewOpacity;
+            chaperoneRendererNew.FadeTo(0.0f, true);
             
             chaperoneRendererLoad = Instantiate(chaperoneRendererPrefab);
-            chaperoneRendererLoad.Active = false;
-            chaperoneRendererLoad.Opacity = PreviewOpacity;
+            chaperoneRendererLoad.FadeTo(0.0f, true);
 
             chaperoneManagingUi.HoveredChaperoneChangedEvent +=
                 HandleHoveredChaperoneToLoadChangedEvent;
@@ -63,9 +62,12 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             else if (chaperoneManagingUi.HoveredChaperoneToLoad != null)
                 activeChaperoneRenderer = chaperoneRendererLoad;
 
-            chaperoneRendererWorking.Active = activeChaperoneRenderer == chaperoneRendererWorking;
-            chaperoneRendererNew.Active = activeChaperoneRenderer == chaperoneRendererNew;
-            chaperoneRendererLoad.Active = activeChaperoneRenderer == chaperoneRendererLoad;
+            chaperoneRendererWorking.FadeTo(
+                activeChaperoneRenderer == chaperoneRendererWorking ? 1.0f : 0.0f);
+            chaperoneRendererNew.FadeTo(
+                activeChaperoneRenderer == chaperoneRendererNew ? PreviewOpacity : 0.0f);
+            chaperoneRendererLoad.FadeTo(
+                activeChaperoneRenderer == chaperoneRendererLoad ? PreviewOpacity : 0.0f);
         }
     }
 }
