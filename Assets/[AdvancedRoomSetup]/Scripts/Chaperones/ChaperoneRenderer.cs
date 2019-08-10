@@ -42,8 +42,16 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         public void Initialize(Chaperone chaperone)
         {
+            if (this.chaperone != null)
+            {
+                this.chaperone.PerimeterChangedEvent -= HandlePerimeterChangedEvent;
+            }
+            
             this.chaperone = chaperone;
 
+            if (chaperone == null)
+                return;
+            
             chaperone.PerimeterChangedEvent += HandlePerimeterChangedEvent;
             
             UpdateVisuals();

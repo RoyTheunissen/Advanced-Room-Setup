@@ -18,6 +18,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
 
         public delegate void LoadButtonPressedHandler(ChaperoneButton chaperoneButton);
         public event LoadButtonPressedHandler LoadButtonPressedEvent;
+
+        public delegate void HoverStateChangedHandler(
+            ChaperoneButton chaperoneButton, bool isHovered);
+        public event HoverStateChangedHandler HoverStateChangedEvent;
         
         public delegate void DeleteButtonPressedHandler(ChaperoneButton chaperoneButton);
         public event DeleteButtonPressedHandler DeleteButtonPressedEvent;
@@ -25,12 +29,25 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
         private void Awake()
         {
             loadButton.Button.onClick.AddListener(HandleLoadButtonPressedEvent);
+            loadButton.HoverStateChangedEvent += HandleHoverStateChangedEvent;
+            
             deleteButton.Button.onClick.AddListener(HandleDeleteButtonPressedEvent);
+        }
+
+        private void OnDestroy()
+        {
+            loadButton.HoverStateChangedEvent -= HandleHoverStateChangedEvent;
         }
 
         private void HandleLoadButtonPressedEvent()
         {
             LoadButtonPressedEvent?.Invoke(this);
+        }
+
+        private void HandleHoverStateChangedEvent(
+            AdvancedCalibrationButton advancedCalibrationButton, bool isHovered)
+        {
+            HoverStateChangedEvent?.Invoke(this, isHovered);
         }
 
         private void HandleDeleteButtonPressedEvent()

@@ -6,8 +6,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     /// <summary>
     /// Responsible for managing the previews of chaperones.
     /// </summary>
-    public sealed class ChaperonePreviewManager : MonoBehaviour 
+    public sealed class ChaperonePreviewManager : MonoBehaviour
     {
+        private const float PreviewOpacity = 0.25f;
+        
         [SerializeField] private ChaperoneManager chaperoneManager;
         [SerializeField] private ChaperoneRenderer chaperoneRendererPrefab;
         
@@ -17,8 +19,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         
         private ChaperoneRenderer chaperoneRendererWorking;
         private ChaperoneRenderer chaperoneRendererNew;
-        
-        private bool showNewChaperonePreview;
+        private ChaperoneRenderer chaperoneRendererLoad;
         
         private void Start()
         {
@@ -29,6 +30,26 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             
             chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
             chaperoneRendererNew.Initialize(chaperoneManager.ChaperoneNew);
+            chaperoneRendererNew.Opacity = PreviewOpacity;
+            
+            chaperoneRendererLoad = Instantiate(chaperoneRendererPrefab);
+            chaperoneRendererLoad.Active = false;
+            chaperoneRendererLoad.Opacity = PreviewOpacity;
+
+            chaperoneManagingUi.HoveredChaperoneChangedEvent +=
+                HandleHoveredChaperoneToLoadChangedEvent;
+        }
+
+        private void OnDestroy()
+        {
+            chaperoneManagingUi.HoveredChaperoneChangedEvent -=
+                HandleHoveredChaperoneToLoadChangedEvent;
+        }
+
+        private void HandleHoveredChaperoneToLoadChangedEvent(
+            ChaperoneManagingUi chaperoneManagingUi, Chaperone from, Chaperone to)
+        {
+            chaperoneRendererLoad.Initialize(to);
         }
 
         private void Update()
@@ -36,9 +57,15 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             overheadCameraFraming.transform.rotation = Quaternion.Euler(
                 0.0f, chaperoneManager.ChaperoneWorking.Origin.rotation.eulerAngles.y, 0.0f);
 
-            showNewChaperonePreview = chaperoneManagingUi.NewChaperoneButton.IsHovered;
-            chaperoneRendererWorking.Opacity = showNewChaperonePreview ? 0.05f : 1.0f;
-            chaperoneRendererNew.Active = showNewChaperonePreview;
+            ChaperoneRenderer activeChaperoneRenderer = chaperoneRendererWorking;
+            if (chaperoneManagingUi.NewChaperoneButton.IsHovered)
+                activeChaperoneRenderer = chaperoneRendererNew;
+            else if (chaperoneManagingUi.HoveredChaperoneToLoad != null)
+                activeChaperoneRenderer = chaperoneRendererLoad;
+
+            chaperoneRendererWorking.Active = activeChaperoneRenderer == chaperoneRendererWorking;
+            chaperoneRendererNew.Active = activeChaperoneRenderer == chaperoneRendererNew;
+            chaperoneRendererLoad.Active = activeChaperoneRenderer == chaperoneRendererLoad;
         }
     }
 }

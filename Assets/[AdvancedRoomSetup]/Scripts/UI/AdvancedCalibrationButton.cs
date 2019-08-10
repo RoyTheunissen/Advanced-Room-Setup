@@ -16,6 +16,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
         private bool isHovered;
         public bool IsHovered => isHovered;
 
+        public delegate void HoverStateChangedHandler(
+            AdvancedCalibrationButton advancedCalibrationButton, bool isHovered);
+        public event HoverStateChangedHandler HoverStateChangedEvent;
+
         private void Reset()
         {
             button = GetComponent<Button>();
@@ -24,11 +28,15 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             isHovered = true;
+            
+            HoverStateChangedEvent?.Invoke(this, isHovered);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             isHovered = false;
+            
+            HoverStateChangedEvent?.Invoke(this, isHovered);
         }
     }
 }

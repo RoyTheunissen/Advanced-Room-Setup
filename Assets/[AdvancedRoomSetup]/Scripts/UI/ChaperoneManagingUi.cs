@@ -21,6 +21,29 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
 
         private List<ChaperoneButton> chaperoneButtons = new List<ChaperoneButton>();
 
+        private ChaperoneButton cachedHoveredChaperoneButton;
+        private ChaperoneButton HoveredChaperoneButton
+        {
+            get => cachedHoveredChaperoneButton;
+            set
+            {
+                if (cachedHoveredChaperoneButton == value)
+                    return;
+
+                ChaperoneButton previous = cachedHoveredChaperoneButton;
+                
+                cachedHoveredChaperoneButton = value;
+                
+                HoveredChaperoneChangedEvent?.Invoke(this, previous?.Chaperone, value?.Chaperone);
+            }
+        }
+
+        public Chaperone HoveredChaperoneToLoad => HoveredChaperoneButton?.Chaperone;
+        
+        public delegate void HoveredChaperoneChangedHandler(
+            ChaperoneManagingUi chaperoneManagingUi, Chaperone from, Chaperone to);
+        public event HoveredChaperoneChangedHandler HoveredChaperoneChangedEvent;
+
         private void Awake()
         {
             UpdateButtons();
@@ -41,6 +64,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
                 
                 chaperoneButtons[i].LoadButtonPressedEvent -= HandleLoadChaperoneButtonPressedEvent;
                 chaperoneButtons[i].DeleteButtonPressedEvent -= HandleDeleteChaperoneButtonPressedEvent;
+                chaperoneButtons[i].HoverStateChangedEvent += HandleHoveredChaperoneButtonChangedEvent;
             }
         }
 
@@ -53,6 +77,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
                     chaperoneButtonPrefab, chaperoneButtonContainer);
                 newButton.LoadButtonPressedEvent += HandleLoadChaperoneButtonPressedEvent;
                 newButton.DeleteButtonPressedEvent += HandleDeleteChaperoneButtonPressedEvent;
+                newButton.HoverStateChangedEvent += HandleHoveredChaperoneButtonChangedEvent;
                 chaperoneButtons.Add(newButton);
             }
 
@@ -86,7 +111,23 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI
 
         private void HandleDeleteChaperoneButtonPressedEvent(ChaperoneButton chaperoneButton)
         {
+            if (HoveredChaperoneButton == chaperoneButton)
+                HoveredChaperoneButton = null;
+            
             chaperoneManager.DeleteChaperone(chaperoneButton.Chaperone);
+        }
+
+        private void HandleHoveredChaperoneButtonChangedEvent(
+            ChaperoneButton chaperoneButton, bool isHovered)
+        {
+            if (!isHovered)
+            {
+                if (chaperoneButton == HoveredChaperoneButton)
+                    HoveredChaperoneButton = null;
+                return;
+            }
+            
+            HoveredChaperoneButton = chaperoneButton;
         }
     }
 }
