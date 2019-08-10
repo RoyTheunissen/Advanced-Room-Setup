@@ -24,6 +24,13 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private string name;
         public string Name => name;
 
+        [NonSerialized] private string filePath;
+        public string FilePath
+        {
+            get { return filePath; }
+            set { filePath = value; }
+        }
+
         public delegate void PerimeterChangedHandler(Chaperone chaperone);
         public event PerimeterChangedHandler PerimeterChangedEvent;
 

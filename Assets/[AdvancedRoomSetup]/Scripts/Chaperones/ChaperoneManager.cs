@@ -47,19 +47,16 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         private void LoadSavedChaperones()
         {
-            Debug.LogFormat($"Searching for saved chaperone files in directory '{SavedChaperonesPath}'");
-
             bool updatedChaperones = false;
 
             string[] filePaths = Directory.GetFiles(SavedChaperonesPath, "*" + ChaperoneExtension);
             for (int i = 0; i < filePaths.Length; i++)
             {
-                Debug.LogFormat($"\tFound chaperone file: '{filePaths[i]}'");
                 try
                 {
                     string json = File.ReadAllText(filePaths[i]);
-                    Debug.Log($"\t\t{json}'");
                     Chaperone loadedChaperone = JsonUtility.FromJson<Chaperone>(json);
+                    loadedChaperone.FilePath = filePaths[i];
                     savedChaperones.Add(loadedChaperone);
                     updatedChaperones = true;
                 }
@@ -109,12 +106,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             // Replace colons because they are not allowed in filenames.
             string fileName = chaperone.Name.Replace(":", "_");
             string filePath = Path.Combine(SavedChaperonesPath, fileName + ChaperoneExtension);
-            Debug.LogFormat($"Saving chaperone '{chaperone.Name}' to file '{filePath}'");
 
             try
             {
                 string json = JsonUtility.ToJson(chaperone, true);
-                Debug.Log(json);
 
                 StreamWriter file = File.CreateText(filePath);
                 file.Write(json);
@@ -141,7 +136,21 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         public void DeleteChaperone(Chaperone chaperone)
         {
             bool changed = savedChaperones.Remove(chaperone);
-            
+
+            // Try to remove the corresponding file too, if applicable.
+            if (!string.IsNullOrEmpty(chaperone.FilePath))
+            {
+                try
+                {
+                    File.Delete(chaperone.FilePath);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    throw;
+                }
+            }
+
             if (changed)
                 SavedChaperonesChangedEvent?.Invoke(this);
         }
