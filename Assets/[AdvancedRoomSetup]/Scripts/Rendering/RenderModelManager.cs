@@ -36,7 +36,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Rendering
                 {
                     ETrackedDeviceClass deviceClass = OpenVR.System.GetTrackedDeviceClass(deviceIndex);
 
-                    if (ShouldVisualize(deviceClass))
+                    if (ShouldVisualize(deviceClass, deviceIndex))
                     {
                         TrackingReferenceObject trackingReference = new TrackingReferenceObject();
                         trackingReference.trackedDeviceClass = deviceClass;
@@ -60,12 +60,16 @@ namespace RoyTheunissen.AdvancedRoomSetup.Rendering
             }
         }
 
-        private bool ShouldVisualize(ETrackedDeviceClass deviceClass)
+        private bool ShouldVisualize(ETrackedDeviceClass deviceClass, uint deviceIndex)
         {
             switch (deviceClass)
             {
-                case ETrackedDeviceClass.HMD:
                 case ETrackedDeviceClass.Controller:
+                    ETrackedControllerRole role =
+                        OpenVR.System.GetControllerRoleForTrackedDeviceIndex(deviceIndex);
+                    return role == ETrackedControllerRole.LeftHand ||
+                           role == ETrackedControllerRole.RightHand;
+                case ETrackedDeviceClass.HMD:
                 case ETrackedDeviceClass.TrackingReference:
                     return true;
                 case ETrackedDeviceClass.Invalid:
