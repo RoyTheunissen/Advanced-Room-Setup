@@ -33,7 +33,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private void Awake()
         {
             chaperoneWorking = new Chaperone("Working");
-            chaperoneWorking.LoadFromWorkingFile();
+            chaperoneWorking.LoadFromWorkingPlayArea();
             
             chaperoneNew = new Chaperone("New");
 
@@ -135,8 +135,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         public void LoadChaperone(Chaperone chaperone)
         {
             chaperoneWorking.CopySettingsFrom(chaperone);
-            
-            // TODO: Save to file.
+            chaperoneWorking.CommitToLivePlayArea();
         }
         
         public void DeleteChaperone(Chaperone chaperone)

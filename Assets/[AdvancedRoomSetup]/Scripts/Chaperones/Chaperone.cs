@@ -48,7 +48,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             PerimeterChangedEvent?.Invoke(this);
         }
 
-        public void LoadFromWorkingFile()
+        public void LoadFromWorkingPlayArea()
         {
             // Get the origin.
             HmdMatrix34_t standingZeroPoseToRawTrackingPose = new HmdMatrix34_t();
@@ -73,29 +73,28 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             size = new Vector2(sizeX, sizeZ);
         }
         
-        public void SaveToWorkingFile()
+        public void CommitToLivePlayArea()
         {
-            // Set the origin.
-            HmdMatrix34_t matrix = origin;
-            OpenVR.ChaperoneSetup.SetWorkingStandingZeroPoseToRawTrackingPose(ref matrix);
-            
-            // Set collision bounds quads.
+            // Calculate quads for our perimeter.
             HmdQuad_t[] quads = new HmdQuad_t[perimeter.Count];
             for (int i = 0; i < quads.Length; i++)
             {
                 Vector3 from = perimeter[i];
                 Vector3 to = perimeter[(i + 1) % perimeter.Count];
-                quads[i] = new ChaperoneQuad(from, to);
+                ChaperoneQuad quad = new ChaperoneQuad(from, to);
+                quad.DrawDebug(origin, Color.red, 5.0f);
+                quads[i] = quad;
             }
+            
+            // Set the origin.
+            HmdMatrix34_t matrix = origin;
+            OpenVR.ChaperoneSetup.SetWorkingStandingZeroPoseToRawTrackingPose(ref matrix);
+            
+            // Set collision bounds quads.
             OpenVR.ChaperoneSetup.SetWorkingCollisionBoundsInfo(quads);
             
-            // Set the play area size as a perimeter of points.
-            HmdVector2_t[] points = new HmdVector2_t[perimeter.Count];
-            for (int i = 0; i < perimeter.Count; i++)
-            {
-                points[i] = new HmdVector2_t {v0 = perimeter[i].x, v1 = perimeter[i].z};
-            }
-            OpenVR.ChaperoneSetup.SetWorkingPerimeter(points);
+            // Set the play area size.
+            OpenVR.ChaperoneSetup.SetWorkingPlayAreaSize(size.x, size.y);
             
             // Commit the working copy to the live environment.
             OpenVR.ChaperoneSetup.CommitWorkingCopy(EChaperoneConfigFile.Live);
@@ -132,6 +131,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         
         public void DrawGizmos()
         {
+            if (!Application.isPlaying)
+                return;
+            
             DrawPose(Matrix4x4.identity, 0.1f);
             DrawPose(origin.inverse, 0.3f);
 
