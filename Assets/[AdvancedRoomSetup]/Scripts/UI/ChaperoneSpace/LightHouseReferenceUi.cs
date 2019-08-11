@@ -36,8 +36,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
 
         protected override void OnDragStart()
         {
-            Debug.Log($"Started dragging lighthouse reference {name}");
-            
             chaperoneEditor.FilterUiInteractibilityByType<LightHouseUi>();
             
             dragLine.gameObject.SetActive(true);
@@ -76,9 +74,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             }
             else
                 dragTarget.gameObject.SetActive(false);
-
-            Debug.Log(
-                $"Dragging lighthouse reference {name} to {position} over lighthouse {lightHouse}");
         }
 
         protected override void OnDropped(List<ChaperoneSpaceUi> chaperoneSpaceUis)
@@ -104,8 +99,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
                 chaperoneRenderer.Chaperone.Realign(
                     pose, lightHouse.transform.localToWorldMatrix);
             }
-            
-            Debug.Log($"Dragged lighthouse reference onto lighthouse '{lightHouse}'");
         }
 
         public void Deactivate()
