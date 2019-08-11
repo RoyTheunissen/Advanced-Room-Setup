@@ -11,6 +11,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     {
         [SerializeField] private OverheadCameraFraming overheadCameraFraming;
         [SerializeField] private ChaperoneManager chaperoneManager;
+        [SerializeField] private LineRenderer dragLinePrefab;
         
         private void Awake()
         {
@@ -38,7 +39,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                 return;
 
             LightHouseUi lightHouseUi = renderModel.gameObject.AddComponent<LightHouseUi>();
-            lightHouseUi.Initialize(this);
+            LineRenderer dragLine = Instantiate(dragLinePrefab);
+            lightHouseUi.Initialize(this, dragLine);
         }
 
         public Vector3 GetWorldSpacePointerPosition(

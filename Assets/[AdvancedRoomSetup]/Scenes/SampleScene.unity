@@ -3512,6 +3512,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   overheadCameraFraming: {fileID: 1144152932}
   chaperoneManager: {fileID: 594122065}
+  dragLinePrefab: {fileID: 6038495573162345918, guid: 9b1ebd443dad8c14694589187406a242,
+    type: 3}
 --- !u!4 &2037301400
 Transform:
   m_ObjectHideFlags: 0
