@@ -22,6 +22,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private Chaperone chaperoneNew;
         public Chaperone ChaperoneNew => chaperoneNew;
 
+        private Chaperone chaperoneLoaded;
+
         private List<Chaperone> savedChaperones = new List<Chaperone>();
         public List<Chaperone> SavedChaperones => savedChaperones;
 
@@ -34,15 +36,33 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             chaperoneWorking = new Chaperone("Working");
             chaperoneWorking.LoadFromWorkingPlayArea();
+            chaperoneWorking.EditedEvent += HandleWorkingChaperoneEditedEvent;
             
             chaperoneNew = new Chaperone("New");
 
             LoadSavedChaperones();
         }
 
+        private void OnDestroy()
+        {
+            chaperoneWorking.EditedEvent -= HandleWorkingChaperoneEditedEvent;
+        }
+
         private void Update()
         {
             chaperoneNew.SetViaExtremities(controllerLeft, controllerRight);
+        }
+
+        private void HandleWorkingChaperoneEditedEvent(Chaperone chaperone)
+        {
+            if (chaperoneLoaded != null)
+            {
+                chaperoneLoaded.CopyPlayAreaFrom(chaperoneWorking);
+                chaperoneLoaded.CopyMetaDataFrom(chaperoneWorking);
+                SaveChaperoneToFile(chaperoneLoaded);
+            }
+            
+            chaperoneWorking.CommitToLivePlayArea();
         }
 
         private void LoadSavedChaperones()
@@ -55,18 +75,19 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                 try
                 {
                     string json = File.ReadAllText(filePaths[i]);
-                    Chaperone loadedChaperone = JsonUtility.FromJson<Chaperone>(json);
-                    loadedChaperone.FilePath = filePaths[i];
+                    Chaperone savedChaperone = JsonUtility.FromJson<Chaperone>(json);
+                    savedChaperone.FilePath = filePaths[i];
 
-                    bool isWorkingChaperone = chaperoneWorking.IsPlaySpaceTheSame(loadedChaperone);
+                    bool isWorkingChaperone = chaperoneWorking.IsPlaySpaceTheSame(savedChaperone);
                     if (isWorkingChaperone)
                     {
-                        Debug.Log("Working chaperone is equal to loaded chaperone " +
-                                  $"'{loadedChaperone.FilePath}'. Copying metadata.");
-                        chaperoneWorking.CopyMetaDataFrom(loadedChaperone);
+                        Debug.Log("Working chaperone is equal to saved chaperone " +
+                                  $"'{savedChaperone.FilePath}'. Copying metadata.");
+                        chaperoneWorking.CopyMetaDataFrom(savedChaperone);
+                        chaperoneLoaded = savedChaperone;
                     }
                     
-                    savedChaperones.Add(loadedChaperone);
+                    savedChaperones.Add(savedChaperone);
                     updatedChaperones = true;
                 }
                 catch (Exception e)
@@ -138,13 +159,19 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         public void LoadChaperone(Chaperone chaperone)
         {
-            chaperoneWorking.CopySettingsFrom(chaperone);
+            chaperoneLoaded = chaperone;
+            
+            chaperoneWorking.CopyPlayAreaFrom(chaperone);
+            chaperoneWorking.CopyMetaDataFrom(chaperone);
             chaperoneWorking.CommitToLivePlayArea();
         }
         
         public void DeleteChaperone(Chaperone chaperone)
         {
             bool changed = savedChaperones.Remove(chaperone);
+
+            if (chaperoneLoaded == chaperone)
+                chaperoneLoaded = null;
 
             // Try to remove the corresponding file too, if applicable.
             if (!string.IsNullOrEmpty(chaperone.FilePath))

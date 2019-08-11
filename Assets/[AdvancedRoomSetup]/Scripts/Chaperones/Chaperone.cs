@@ -13,6 +13,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     [Serializable]
     public class Chaperone
     {
+        private const float EqualityTolerancePosition = 0.01f;
+        private const float EqualityToleranceRotation = 1.0f;
+        
         [SerializeField] private List<Vector3> perimeter = new List<Vector3>();
         public List<Vector3> Perimeter => perimeter;
 
@@ -36,7 +39,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         }
 
         public delegate void PerimeterChangedHandler(Chaperone chaperone);
-        public event PerimeterChangedHandler PerimeterChangedEvent;
+        public event PerimeterChangedHandler VisualUpdateRequiredEvent;
+        
+        public delegate void EditedHandler(Chaperone chaperone);
+        public event EditedHandler EditedEvent;
 
         public Chaperone(string name)
         {
@@ -49,10 +55,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             // re-contextualize chaperones later even when lighthouses have been adjusted.
             CacheWorkingLighthousePositionsAsReference();
             
-            CopySettingsFrom(other);
+            CopyPlayAreaFrom(other);
         }
 
-        public void CopySettingsFrom(Chaperone other)
+        public void CopyPlayAreaFrom(Chaperone other)
         {
             perimeter.Clear();
             perimeter.AddRange(other.perimeter);
@@ -60,7 +66,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             origin = other.origin;
             size = other.size;
             
-            PerimeterChangedEvent?.Invoke(this);
+            VisualUpdateRequiredEvent?.Invoke(this);
         }
         
         public void CopyMetaDataFrom(Chaperone other)
@@ -69,6 +75,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             
             LightHouseReferences.Clear();
             LightHouseReferences.AddRange(other.LightHouseReferences);
+            VisualUpdateRequiredEvent?.Invoke(this);
         }
 
         public void LoadFromWorkingPlayArea()
@@ -168,7 +175,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
             size = new Vector2(max.x - min.x, max.z - min.z);
             
-            PerimeterChangedEvent?.Invoke(this);
+            VisualUpdateRequiredEvent?.Invoke(this);
         }
 
         public void Realign(Matrix4x4 from, Matrix4x4 to)
@@ -186,14 +193,20 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                 lightHouseReferences[i] = movement * lightHouseReferences[i];
             }
             
-            // TODO: Re-commit to the live play area. Also save to a file?
-            
-            PerimeterChangedEvent?.Invoke(this);
+            VisualUpdateRequiredEvent?.Invoke(this);
+            EditedEvent?.Invoke(this);
         }
 
         public bool IsPlaySpaceTheSame(Chaperone other)
         {
-            if (origin != other.origin)
+            float originDistance = Vector3.Distance(origin.GetPosition(), other.origin.GetPosition());
+            if (originDistance > EqualityTolerancePosition)
+            {
+                return false;
+            }
+
+            float originAngle = Quaternion.Angle(origin.rotation, other.origin.rotation);
+            if (originAngle > EqualityToleranceRotation)
                 return false;
 
             if (size != other.size)

@@ -71,7 +71,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             if (this.chaperone != null)
             {
-                this.chaperone.PerimeterChangedEvent -= HandlePerimeterChangedEvent;
+                this.chaperone.VisualUpdateRequiredEvent -= HandleVisualUpdateRequiredEvent;
             }
             
             this.chaperone = chaperone;
@@ -86,7 +86,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                 return;
             }
             
-            chaperone.PerimeterChangedEvent += HandlePerimeterChangedEvent;
+            chaperone.VisualUpdateRequiredEvent += HandleVisualUpdateRequiredEvent;
             
             UpdateVisuals();
         }
@@ -94,10 +94,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private void OnDestroy()
         {
             if (chaperone != null)
-                chaperone.PerimeterChangedEvent -= HandlePerimeterChangedEvent;
+                chaperone.VisualUpdateRequiredEvent -= HandleVisualUpdateRequiredEvent;
         }
 
-        private void HandlePerimeterChangedEvent(Chaperone chaperone)
+        private void HandleVisualUpdateRequiredEvent(Chaperone chaperone)
         {
             UpdateVisuals();
         }
