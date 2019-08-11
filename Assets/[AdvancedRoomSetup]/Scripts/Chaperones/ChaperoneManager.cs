@@ -57,6 +57,15 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                     string json = File.ReadAllText(filePaths[i]);
                     Chaperone loadedChaperone = JsonUtility.FromJson<Chaperone>(json);
                     loadedChaperone.FilePath = filePaths[i];
+
+                    bool isWorkingChaperone = chaperoneWorking.IsPlaySpaceTheSame(loadedChaperone);
+                    if (isWorkingChaperone)
+                    {
+                        Debug.Log("Working chaperone is equal to loaded chaperone " +
+                                  $"'{loadedChaperone.FilePath}'. Copying metadata.");
+                        chaperoneWorking.CopyMetaDataFrom(loadedChaperone);
+                    }
+                    
                     savedChaperones.Add(loadedChaperone);
                     updatedChaperones = true;
                 }

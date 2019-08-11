@@ -55,6 +55,11 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             
             PerimeterChangedEvent?.Invoke(this);
         }
+        
+        public void CopyMetaDataFrom(Chaperone other)
+        {
+            FilePath = other.FilePath;
+        }
 
         public void LoadFromWorkingPlayArea()
         {
@@ -135,6 +140,26 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             size = new Vector2(max.x - min.x, max.z - min.z);
             
             PerimeterChangedEvent?.Invoke(this);
+        }
+
+        public bool IsPlaySpaceTheSame(Chaperone other)
+        {
+            if (origin != other.origin)
+                return false;
+
+            if (size != other.size)
+                return false;
+
+            if (perimeter.Count != other.perimeter.Count)
+                return false;
+
+            for (int i = 0; i < perimeter.Count; i++)
+            {
+                if (perimeter[i] != other.perimeter[i])
+                    return false;
+            }
+
+            return true;
         }
         
         public void DrawGizmos()
