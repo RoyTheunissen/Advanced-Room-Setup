@@ -40,6 +40,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             get => materialPropertyBlock.GetFloat(GlowProperty);
             set
             {
+                renderer.GetPropertyBlock(materialPropertyBlock);
                 materialPropertyBlock.SetFloat(GlowProperty, value);
                 renderer.SetPropertyBlock(materialPropertyBlock);
             }

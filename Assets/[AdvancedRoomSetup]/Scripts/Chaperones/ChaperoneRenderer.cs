@@ -19,7 +19,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private float arrowPaddingMin = 0.1f;
         [SerializeField] private float arrowSizeMin = 0.000000001f;
         [SerializeField] private float arrowSizeMax = 0.5f;
-        [SerializeField] private Renderer[] fadeableRenderers;
+        [SerializeField] private List<Renderer> fadeableRenderers = new List<Renderer>();
 
         private Chaperone chaperone;
 
@@ -37,18 +37,23 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             {
                 cachedOpacity = value;
 
-                for (int i = 0; i < fadeableRenderers.Length; i++)
+                for (int i = 0; i < fadeableRenderers.Count; i++)
                 {
-                    fadeableRenderers[i].material.color =
-                        fadeableRenderers[i].material.color.Fade(cachedOpacity);
+                    fadeableRenderers[i].GetPropertyBlock(materialPropertyBlock);
+                    materialPropertyBlock.SetFloat("_Fade", 1.0f - cachedOpacity);
+                    fadeableRenderers[i].SetPropertyBlock(materialPropertyBlock);
                 }
             }
         }
         
         private Tween opacityTween;
 
+        private MaterialPropertyBlock materialPropertyBlock;
+
         private void Awake()
         {
+            materialPropertyBlock = new MaterialPropertyBlock();
+            
             opacityTween = new Tween(f => Opacity = f).SkipToIn().SetContinuous(true);
         }
 

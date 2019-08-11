@@ -43,6 +43,14 @@ SubShader {
             sampler2D _MainTex;
             float4 _MainTex_ST;
             fixed4 _Color;
+            
+            // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
+            // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
+            // #pragma instancing_options assumeuniformscaling
+            UNITY_INSTANCING_BUFFER_START(Props)
+                UNITY_DEFINE_INSTANCED_PROP(fixed, _Fade)
+                UNITY_DEFINE_INSTANCED_PROP(fixed, _Glow)
+            UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert (appdata_t v)
             {
@@ -58,6 +66,9 @@ SubShader {
             fixed4 frag (v2f i) : COLOR
             {
                 fixed4 col = tex2D(_MainTex, i.texcoord) * _Color;
+                col = lerp(col, fixed4(1, 1, 1, 1), _Glow);
+                col.a *= 1.0 - _Fade;
+                
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 //UNITY_OPAQUE_ALPHA(col.a);
                 return col;
