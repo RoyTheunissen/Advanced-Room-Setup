@@ -23,6 +23,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
 
         [NonSerialized] private new Renderer renderer;
         private MaterialPropertyBlock materialPropertyBlock;
+        
+        [NonSerialized] private Collider[] colliders;
 
         private bool isHovered;
         public bool IsHovered => isHovered;
@@ -36,6 +38,23 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         private float glowTarget;
         private float glowVelocity;
 
+        public bool IsInteractable
+        {
+            get { return selectable.interactable; }
+            private set
+            {
+                selectable.interactable = value;
+
+                for (int i = 0; i < colliders.Length; i++)
+                {
+                    colliders[i].enabled = value;
+                }
+                
+                if (!IsInteractable)
+                    isHovered = isSelected = isDragged = false;
+            }
+        }
+
         private float Glow
         {
             get => materialPropertyBlock.GetFloat(GlowProperty);
@@ -48,32 +67,59 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         }
 
         private List<ChaperoneSpaceUi> dropTargets = new List<ChaperoneSpaceUi>();
-        
-        private ChaperoneEditor chaperoneEditor;
+
+        protected ChaperoneEditor chaperoneEditor;
+        private Selectable selectable;
 
         protected virtual void Awake()
         {
             MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
             for (int i = 0; i < meshFilters.Length; i++)
             {
-                MeshCollider meshCollider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
-                meshCollider.convex = true;
+                Collider existingCollider = meshFilters[i].gameObject.GetComponent<Collider>();
+                
+                if (existingCollider == null)
+                {
+                    MeshCollider meshCollider =
+                        meshFilters[i].gameObject.AddComponent<MeshCollider>();
+                    meshCollider.convex = true;
+                }
+                
                 meshFilters[i].gameObject.layer = RenderModelLayer;
             }
-            gameObject.AddComponent<Selectable>();
+            selectable = gameObject.AddComponent<Selectable>();
+            selectable.transition = Selectable.Transition.None;
             
             renderer = GetComponentInChildren<Renderer>();
+            colliders = GetComponentsInChildren<Collider>();
+            
             materialPropertyBlock = new MaterialPropertyBlock();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            chaperoneEditor.Unregister(this);
         }
 
         public void Initialize(ChaperoneEditor chaperoneEditor)
         {
             this.chaperoneEditor = chaperoneEditor;
+
+            chaperoneEditor.Register(this);
+
+            UpdateInteractibility();
+        }
+
+        public void UpdateInteractibility()
+        {
+            IsInteractable = chaperoneEditor.IsUiTypeInteractible(GetType());
         }
 
         protected virtual void Update()
         {
-            if (isDragged)
+            if (!IsInteractable)
+                glowTarget = 0.0f;
+            else if (isDragged)
                 glowTarget = 1.0f;
             else if (isHovered)
                 glowTarget = 0.5f;

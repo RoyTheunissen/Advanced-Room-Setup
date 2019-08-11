@@ -27,6 +27,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         {
             Debug.Log($"Started dragging lighthouse reference {name}");
             
+            chaperoneEditor.FilterUiInteractibilityByType<LightHouseUi>();
+            
             dragLine.gameObject.SetActive(true);
         }
 
@@ -40,7 +42,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             float distance = delta.magnitude;
             Vector3 direction = delta / distance;
 
-            dragLine.transform.position = from + Vector3.down;
+            dragLine.transform.position = from;
             dragLine.transform.rotation = Quaternion.LookRotation(direction);
             dragLine.SetPosition(1, Vector3.forward * distance);
             
@@ -83,6 +85,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
                     break;
                 }
             }
+            
+            chaperoneEditor.FilterUiInteractibilityByType<LightHouseReferenceUi>();
             
             Debug.Log($"Dragged lighthouse reference onto lighthouse '{lightHouse}'");
         }

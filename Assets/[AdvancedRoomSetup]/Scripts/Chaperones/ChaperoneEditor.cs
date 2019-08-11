@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace;
 using UnityEngine;
 using Valve.VR;
@@ -12,9 +14,15 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private OverheadCameraFraming overheadCameraFraming;
         [SerializeField] private ChaperoneManager chaperoneManager;
         [SerializeField] private LineRenderer dragLinePrefab;
+
+        private Type uiInteractibilityTypeFilter;
+        
+        private List<ChaperoneSpaceUi> chaperoneSpaceUis = new List<ChaperoneSpaceUi>();
         
         private void Awake()
         {
+            FilterUiInteractibilityByType<LightHouseReferenceUi>();
+            
             SteamVR_Events.RenderModelLoaded.AddListener(OnRenderModelLoaded);
         }
 
@@ -42,12 +50,45 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             lightHouseUi.Initialize(this);
         }
 
+        public bool IsUiTypeInteractible(Type type)
+        {
+            return uiInteractibilityTypeFilter.IsAssignableFrom(type);
+        }
+
+        public void ClearUiInteractibilityFilter()
+        {
+            uiInteractibilityTypeFilter = null;
+            for (int i = 0; i < chaperoneSpaceUis.Count; i++)
+            {
+                chaperoneSpaceUis[i].UpdateInteractibility();
+            }
+        }
+
+        public void FilterUiInteractibilityByType<T>()
+        {
+            uiInteractibilityTypeFilter = typeof(T);
+            for (int i = 0; i < chaperoneSpaceUis.Count; i++)
+            {
+                chaperoneSpaceUis[i].UpdateInteractibility();
+            }
+        }
+
         public Vector3 GetWorldSpacePointerPosition(
             Vector2 screenSpacePointerPosition, float y = 0.0f)
         {
             y += chaperoneManager.ChaperoneWorking.Origin.GetPosition().y;
             return overheadCameraFraming.GetWorldSpacePointerPosition(
                 screenSpacePointerPosition, y);
+        }
+
+        public void Register(ChaperoneSpaceUi chaperoneSpaceUi)
+        {
+            chaperoneSpaceUis.Add(chaperoneSpaceUi);
+        }
+        
+        public void Unregister(ChaperoneSpaceUi chaperoneSpaceUi)
+        {
+            chaperoneSpaceUis.Remove(chaperoneSpaceUi);
         }
     }
 }
