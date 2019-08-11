@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using RoyTheunissen.AdvancedRoomSetup.Chaperones;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         private const string GlowProperty = "_Glow";
         private const float GlowDuration = 0.1f;
 
-        private new Renderer renderer;
+        [NonSerialized] private new Renderer renderer;
         private MaterialPropertyBlock materialPropertyBlock;
 
         private bool isHovered;
@@ -136,10 +137,16 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             OnDropped(dropTargets);
         }
 
-        protected abstract void OnDragStart();
+        protected virtual void OnDragStart()
+        {
+        }
 
-        protected abstract void OnDrag(Vector3 position);
+        protected virtual void OnDrag(Vector3 position)
+        {
+        }
 
-        protected abstract void OnDropped(List<ChaperoneSpaceUi> chaperoneSpaceUis);
+        protected virtual void OnDropped(List<ChaperoneSpaceUi> chaperoneSpaceUis)
+        {
+        }
     }
 }

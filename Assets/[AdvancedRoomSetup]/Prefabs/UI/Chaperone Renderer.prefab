@@ -400,6 +400,8 @@ MonoBehaviour:
   - {fileID: 4197292641569428262}
   - {fileID: 897243287586827345}
   - {fileID: 2538415734400517050}
+  lightHouseReferenceUiPrefab: {fileID: 4310503800973416323, guid: 65dc740902c81d641bc234fc79b3ff5e,
+    type: 3}
 --- !u!1 &7067749976304293043
 GameObject:
   m_ObjectHideFlags: 0

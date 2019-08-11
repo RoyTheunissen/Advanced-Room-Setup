@@ -24,6 +24,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
 
         [SerializeField] private string name;
         public string Name => name;
+        
+        [SerializeField] private List<Matrix4x4> lightHouseReferences = new List<Matrix4x4>();
+        public List<Matrix4x4> LightHouseReferences => lightHouseReferences;
 
         [NonSerialized] private string filePath;
         public string FilePath
@@ -42,6 +45,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         
         public Chaperone(string name, Chaperone other) : this(name)
         {
+            // Metadata: Cache where the lighthouses were when creating new chaperones so we can
+            // re-contextualize chaperones later even when lighthouses have been adjusted.
+            CacheWorkingLighthousePositionsAsReference();
+            
             CopySettingsFrom(other);
         }
 
@@ -59,6 +66,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         public void CopyMetaDataFrom(Chaperone other)
         {
             FilePath = other.FilePath;
+            
+            LightHouseReferences.Clear();
+            LightHouseReferences.AddRange(other.LightHouseReferences);
         }
 
         public void LoadFromWorkingPlayArea()
@@ -85,7 +95,26 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             OpenVR.ChaperoneSetup.GetWorkingPlayAreaSize(ref sizeX, ref sizeZ);
             size = new Vector2(sizeX, sizeZ);
         }
-        
+
+        private void CacheWorkingLighthousePositionsAsReference()
+        {
+            TrackedDevicePose_t[] poses = new TrackedDevicePose_t[OpenVR.k_unMaxTrackedDeviceCount];
+            OpenVR.System.GetDeviceToAbsoluteTrackingPose(
+                ETrackingUniverseOrigin.TrackingUniverseRawAndUncalibrated, 0.0f, poses);
+
+            lightHouseReferences.Clear();
+            for (int i = 0; i < poses.Length; i++)
+            {
+                ETrackedDeviceClass deviceClass = OpenVR.System.GetTrackedDeviceClass((uint)i);
+                Matrix4x4 pose = poses[i].mDeviceToAbsoluteTracking;
+
+                if (deviceClass != ETrackedDeviceClass.TrackingReference || !poses[i].bPoseIsValid)
+                    continue;
+
+                lightHouseReferences.Add(pose);
+            }
+        }
+
         public void CommitToLivePlayArea()
         {
             // Calculate quads for our perimeter.

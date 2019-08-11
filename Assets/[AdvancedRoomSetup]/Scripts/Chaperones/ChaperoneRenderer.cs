@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace;
 using RoyTheunissen.Scaffolding.Tweening;
 using UnityEngine;
 
@@ -20,6 +22,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private float arrowSizeMin = 0.000000001f;
         [SerializeField] private float arrowSizeMax = 0.5f;
         [SerializeField] private List<Renderer> fadeableRenderers = new List<Renderer>();
+        [SerializeField] private LightHouseReferenceUi lightHouseReferenceUiPrefab;
 
         private Chaperone chaperone;
 
@@ -48,6 +51,11 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         
         private Tween opacityTween;
 
+        private List<LightHouseReferenceUi> lightHouseReferenceUis =
+            new List<LightHouseReferenceUi>();
+
+        private ChaperoneEditor chaperoneEditor;
+
         private MaterialPropertyBlock materialPropertyBlock;
 
         private void Awake()
@@ -57,7 +65,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             opacityTween = new Tween(f => Opacity = f).SkipToIn().SetContinuous(true);
         }
 
-        public void Initialize(Chaperone chaperone)
+        public void Initialize(Chaperone chaperone, ChaperoneEditor chaperoneEditor)
         {
             if (this.chaperone != null)
             {
@@ -65,9 +73,15 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             }
             
             this.chaperone = chaperone;
+            this.chaperoneEditor = chaperoneEditor;
 
+            name = "Chaperone - " + chaperone?.Name;
+            
             if (chaperone == null)
+            {
+                validityContainer.SetActive(false);
                 return;
+            }
             
             chaperone.PerimeterChangedEvent += HandlePerimeterChangedEvent;
             
@@ -118,6 +132,33 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             playAreaArrow.gameObject.SetActive(
                 !Mathf.Approximately(chaperone.Size.x, 0.0f) &&
                 !Mathf.Approximately(chaperone.Size.y, 0.0f));
+
+            UpdateLightHouseReferenceUis();
+        }
+
+        private void UpdateLightHouseReferenceUis()
+        {
+            // Instantiate more buttons if needed.
+            for (int i = lightHouseReferenceUis.Count; i < chaperone.LightHouseReferences.Count; i++)
+            {
+                LightHouseReferenceUi lightHouseReferenceUi = Instantiate(
+                    lightHouseReferenceUiPrefab, validityContainer.transform);
+                lightHouseReferenceUi.Initialize(chaperoneEditor);
+                fadeableRenderers.Add(lightHouseReferenceUi.Renderer);
+                lightHouseReferenceUis.Add(lightHouseReferenceUi);
+            }
+
+            // Update the data of all the chaperone buttons.
+            for (int i = 0; i < lightHouseReferenceUis.Count; i++)
+            {
+                if (i >= chaperone.LightHouseReferences.Count)
+                {
+                    lightHouseReferenceUis[i].Deactivate();
+                    continue;
+                }
+                
+                lightHouseReferenceUis[i].Activate(chaperone.LightHouseReferences[i]);
+            }
         }
     }
 }

@@ -39,8 +39,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                 return;
 
             LightHouseUi lightHouseUi = renderModel.gameObject.AddComponent<LightHouseUi>();
-            LineRenderer dragLine = Instantiate(dragLinePrefab);
-            lightHouseUi.Initialize(this, dragLine);
+            lightHouseUi.Initialize(this);
         }
 
         public Vector3 GetWorldSpacePointerPosition(

@@ -11,6 +11,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private const float PreviewOpacity = 0.25f;
         
         [SerializeField] private ChaperoneManager chaperoneManager;
+        [SerializeField] private ChaperoneEditor chaperoneEditor;
         [SerializeField] private ChaperoneRenderer chaperoneRendererPrefab;
         
         [Space]
@@ -26,10 +27,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             // Use Start for now to ensure ChaperoneManager is fully initialized.
             
             chaperoneRendererWorking = Instantiate(chaperoneRendererPrefab);
-            chaperoneRendererWorking.Initialize(chaperoneManager.ChaperoneWorking);
+            chaperoneRendererWorking.Initialize(chaperoneManager.ChaperoneWorking, chaperoneEditor);
             
             chaperoneRendererNew = Instantiate(chaperoneRendererPrefab);
-            chaperoneRendererNew.Initialize(chaperoneManager.ChaperoneNew);
+            chaperoneRendererNew.Initialize(chaperoneManager.ChaperoneNew, chaperoneEditor);
             chaperoneRendererNew.FadeTo(0.0f, true);
             
             chaperoneRendererLoad = Instantiate(chaperoneRendererPrefab);
@@ -48,7 +49,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         private void HandleHoveredChaperoneToLoadChangedEvent(
             ChaperoneManagingUi chaperoneManagingUi, Chaperone from, Chaperone to)
         {
-            chaperoneRendererLoad.Initialize(to);
+            chaperoneRendererLoad.Initialize(to, chaperoneEditor);
         }
 
         private void Update()

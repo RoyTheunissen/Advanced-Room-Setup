@@ -983,7 +983,7 @@ Camera:
     width: 0.53
     height: 0.66
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 1
   orthographic size: 1.6
@@ -1010,7 +1010,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 798336440}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1144152933}
@@ -2682,6 +2682,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chaperoneManager: {fileID: 594122065}
+  chaperoneEditor: {fileID: 2037301399}
   chaperoneRendererPrefab: {fileID: 2303727335956242285, guid: 6669ee994245a3349895f2de6cdd1807,
     type: 3}
   overheadCameraFraming: {fileID: 1144152932}
