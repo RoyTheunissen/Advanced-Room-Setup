@@ -38,6 +38,17 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         private float glowTarget;
         private float glowVelocity;
 
+        private bool shouldBeInteractible = true;
+        public bool ShouldBeInteractible
+        {
+            get { return shouldBeInteractible; }
+            set
+            {
+                shouldBeInteractible = value;
+                UpdateInteractibility();
+            }
+        }
+
         public bool IsInteractable
         {
             get { return selectable.interactable; }
@@ -90,6 +101,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             selectable = gameObject.AddComponent<Selectable>();
             selectable.transition = Selectable.Transition.None;
             
+            Navigation selectableNavigation = selectable.navigation;
+            selectableNavigation.mode = Navigation.Mode.None;
+            selectable.navigation = selectableNavigation;
+            
             renderer = GetComponentInChildren<Renderer>();
             colliders = GetComponentsInChildren<Collider>();
             
@@ -112,11 +127,14 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
 
         public void UpdateInteractibility()
         {
-            IsInteractable = chaperoneEditor.IsUiTypeInteractible(GetType());
+            IsInteractable =
+                chaperoneEditor.IsUiTypeInteractible(GetType()) && shouldBeInteractible;
         }
 
         protected virtual void Update()
         {
+            UpdateInteractibility();
+            
             if (!IsInteractable)
                 glowTarget = 0.0f;
             else if (isDragged)

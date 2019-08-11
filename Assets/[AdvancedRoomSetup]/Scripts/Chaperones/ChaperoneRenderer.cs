@@ -56,6 +56,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             new List<LightHouseReferenceUi>();
 
         private ChaperoneEditor chaperoneEditor;
+        private bool isEditable;
 
         private MaterialPropertyBlock materialPropertyBlock;
 
@@ -66,7 +67,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             opacityTween = new Tween(f => Opacity = f).SkipToIn().SetContinuous(true);
         }
 
-        public void Initialize(Chaperone chaperone, ChaperoneEditor chaperoneEditor)
+        public void Initialize(Chaperone chaperone, ChaperoneEditor chaperoneEditor, bool isEditable)
         {
             if (this.chaperone != null)
             {
@@ -75,6 +76,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             
             this.chaperone = chaperone;
             this.chaperoneEditor = chaperoneEditor;
+            this.isEditable = isEditable;
 
             name = "Chaperone - " + chaperone?.Name;
             
@@ -144,7 +146,10 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             {
                 LightHouseReferenceUi lightHouseReferenceUi = Instantiate(
                     lightHouseReferenceUiPrefab, validityContainer.transform);
+                
                 lightHouseReferenceUi.Initialize(chaperoneEditor, this);
+                lightHouseReferenceUi.ShouldBeInteractible = isEditable;
+                
                 fadeableRenderers.Add(lightHouseReferenceUi.Renderer);
                 lightHouseReferenceUis.Add(lightHouseReferenceUi);
             }
@@ -158,6 +163,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
                     continue;
                 }
                 
+                lightHouseReferenceUis[i].ShouldBeInteractible = isEditable;
                 lightHouseReferenceUis[i].Activate(chaperone.LightHouseReferences[i]);
             }
         }

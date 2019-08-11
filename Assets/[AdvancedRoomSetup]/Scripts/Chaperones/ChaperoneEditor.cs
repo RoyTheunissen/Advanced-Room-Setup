@@ -13,7 +13,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     {
         [SerializeField] private OverheadCameraFraming overheadCameraFraming;
         [SerializeField] private ChaperoneManager chaperoneManager;
-        [SerializeField] private LineRenderer dragLinePrefab;
 
         private Type uiInteractibilityTypeFilter;
         
