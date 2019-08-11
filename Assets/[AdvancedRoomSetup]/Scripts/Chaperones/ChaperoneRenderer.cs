@@ -25,6 +25,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         [SerializeField] private LightHouseReferenceUi lightHouseReferenceUiPrefab;
 
         private Chaperone chaperone;
+        public Chaperone Chaperone => chaperone;
 
         public bool Active
         {
@@ -143,7 +144,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             {
                 LightHouseReferenceUi lightHouseReferenceUi = Instantiate(
                     lightHouseReferenceUiPrefab, validityContainer.transform);
-                lightHouseReferenceUi.Initialize(chaperoneEditor);
+                lightHouseReferenceUi.Initialize(chaperoneEditor, this);
                 fadeableRenderers.Add(lightHouseReferenceUi.Renderer);
                 lightHouseReferenceUis.Add(lightHouseReferenceUi);
             }

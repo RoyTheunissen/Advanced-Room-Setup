@@ -171,6 +171,26 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             PerimeterChangedEvent?.Invoke(this);
         }
 
+        public void Realign(Matrix4x4 from, Matrix4x4 to)
+        {
+            // TODO: I'm sure there's a more efficient way to do this, I thought I could multiply
+            // 'to' by the inverse of 'from' but that didn't do what I expected.
+            Matrix4x4 movement = Matrix4x4.TRS(
+                to.GetPosition() - from.GetPosition(),
+                Quaternion.Inverse(from.rotation) * to.rotation, Vector3.one);
+
+            // Apply the movement to the origin and our light house references.
+            origin = movement * origin;
+            for (int i = 0; i < lightHouseReferences.Count; i++)
+            {
+                lightHouseReferences[i] = movement * lightHouseReferences[i];
+            }
+            
+            // TODO: Re-commit to the live play area. Also save to a file?
+            
+            PerimeterChangedEvent?.Invoke(this);
+        }
+
         public bool IsPlaySpaceTheSame(Chaperone other)
         {
             if (origin != other.origin)
@@ -195,9 +215,6 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
         {
             if (!Application.isPlaying)
                 return;
-            
-            DrawPose(Matrix4x4.identity, 0.1f);
-            DrawPose(origin.inverse, 0.3f);
 
             Gizmos.color = Color.red;
             DrawPlayArea();
@@ -224,6 +241,19 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             }
             
             Gizmos.matrix = originalMatrix;
+        }
+        
+        private void DebugPose(Matrix4x4 matrix, float length, float duration = 0.0f)
+        {
+            Debug.DrawRay(
+                matrix.MultiplyPoint(Vector3.zero), matrix * Vector3.right * length, Color.red,
+                duration);
+            Debug.DrawRay(
+                matrix.MultiplyPoint(Vector3.zero), matrix * Vector3.up * length, Color.green,
+                duration);
+            Debug.DrawRay(
+                matrix.MultiplyPoint(Vector3.zero), matrix * Vector3.forward * length, Color.blue,
+                duration);
         }
 
         private void DrawPose(Matrix4x4 matrix, float length)

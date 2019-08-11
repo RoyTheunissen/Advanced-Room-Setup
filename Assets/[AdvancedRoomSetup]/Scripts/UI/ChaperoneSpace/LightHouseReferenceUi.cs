@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RoyTheunissen.AdvancedRoomSetup.Chaperones;
 using UnityEngine;
 using Valve.VR;
 
@@ -14,6 +15,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         
         [SerializeField] private LineRenderer dragLine;
         [SerializeField] private Transform dragTarget;
+        
+        private Matrix4x4 pose;
+        private ChaperoneRenderer chaperoneRenderer;
 
         protected override void Awake()
         {
@@ -21,6 +25,13 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             
             dragLine.gameObject.SetActive(false);
             dragTarget.gameObject.SetActive(false);
+        }
+
+        public void Initialize(ChaperoneEditor chaperoneEditor, ChaperoneRenderer chaperoneRenderer)
+        {
+            base.Initialize(chaperoneEditor);
+
+            this.chaperoneRenderer = chaperoneRenderer;
         }
 
         protected override void OnDragStart()
@@ -87,6 +98,12 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             }
             
             chaperoneEditor.FilterUiInteractibilityByType<LightHouseReferenceUi>();
+
+            if (lightHouse != null)
+            {
+                chaperoneRenderer.Chaperone.Realign(
+                    pose, lightHouse.transform.localToWorldMatrix);
+            }
             
             Debug.Log($"Dragged lighthouse reference onto lighthouse '{lightHouse}'");
         }
@@ -98,6 +115,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
 
         public void Activate(Matrix4x4 pose)
         {
+            this.pose = pose;
             gameObject.SetActive(true);
             transform.position = pose.GetPosition();
             transform.rotation = Quaternion.identity;
