@@ -9,6 +9,9 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
     /// </summary>
     public sealed class ChaperoneEditor : MonoBehaviour
     {
+        [SerializeField] private OverheadCameraFraming overheadCameraFraming;
+        [SerializeField] private ChaperoneManager chaperoneManager;
+        
         private void Awake()
         {
             SteamVR_Events.RenderModelLoaded.AddListener(OnRenderModelLoaded);
@@ -34,7 +37,16 @@ namespace RoyTheunissen.AdvancedRoomSetup.Chaperones
             if (deviceClass != ETrackedDeviceClass.TrackingReference)
                 return;
 
-            renderModel.gameObject.AddComponent<LightHouseUi>();
+            LightHouseUi lightHouseUi = renderModel.gameObject.AddComponent<LightHouseUi>();
+            lightHouseUi.Initialize(this);
+        }
+
+        public Vector3 GetWorldSpacePointerPosition(
+            Vector2 screenSpacePointerPosition, float y = 0.0f)
+        {
+            y += chaperoneManager.ChaperoneWorking.Origin.GetPosition().y;
+            return overheadCameraFraming.GetWorldSpacePointerPosition(
+                screenSpacePointerPosition, y);
         }
     }
 }

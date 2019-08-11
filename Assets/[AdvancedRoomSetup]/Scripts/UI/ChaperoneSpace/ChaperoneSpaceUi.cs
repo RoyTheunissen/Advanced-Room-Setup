@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using RoyTheunissen.AdvancedRoomSetup.Chaperones;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -45,6 +46,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         }
 
         private List<ChaperoneSpaceUi> dropTargets = new List<ChaperoneSpaceUi>();
+        
+        private ChaperoneEditor chaperoneEditor;
 
         protected virtual void Awake()
         {
@@ -59,6 +62,11 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             
             renderer = GetComponentInChildren<Renderer>();
             materialPropertyBlock = new MaterialPropertyBlock();
+        }
+
+        public void Initialize(ChaperoneEditor chaperoneEditor)
+        {
+            this.chaperoneEditor = chaperoneEditor;
         }
 
         protected virtual void Update()
@@ -102,7 +110,12 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
 
         public void OnDrag(PointerEventData eventData)
         {
-            OnDrag(eventData.position);
+            Vector2 pointerScreenSpace = eventData.position;
+
+            Vector3 pointerWorldSpace =
+                chaperoneEditor.GetWorldSpacePointerPosition(pointerScreenSpace);
+            
+            OnDrag(pointerWorldSpace);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -124,7 +137,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
 
         protected abstract void OnDragStart();
 
-        protected abstract void OnDrag(Vector2 position);
+        protected abstract void OnDrag(Vector3 position);
 
         protected abstract void OnDropped(List<ChaperoneSpaceUi> chaperoneSpaceUis);
     }

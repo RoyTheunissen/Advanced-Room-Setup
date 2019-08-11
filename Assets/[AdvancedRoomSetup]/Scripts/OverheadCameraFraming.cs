@@ -1,9 +1,5 @@
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using Matrix4x4 = UnityEngine.Matrix4x4;
-using Quaternion = UnityEngine.Quaternion;
-using Vector3 = UnityEngine.Vector3;
 
 namespace RoyTheunissen.AdvancedRoomSetup
 {
@@ -68,6 +64,20 @@ namespace RoyTheunissen.AdvancedRoomSetup
             boundsLocal.Expand(cameraPadding);
             camera.orthographicSize = Mathf.Max(cameraSizeMin, 
                 boundsLocal.extents.x, 0.0f, boundsLocal.extents.z);
+        }
+
+        public Vector3 GetWorldSpacePointerPosition(Vector2 screenSpacePointerPosition, float y)
+        {
+            Vector3 viewportPointerPosition =
+                camera.ScreenToViewportPoint(screenSpacePointerPosition);
+            
+            Ray pointerWorldRay = camera.ViewportPointToRay(viewportPointerPosition);
+            
+            Plane plane = new Plane(Vector3.up, Vector3.up * y);
+
+            plane.Raycast(pointerWorldRay, out float distance);
+
+            return pointerWorldRay.GetPoint(distance);
         }
         
         private void OnDrawGizmos()

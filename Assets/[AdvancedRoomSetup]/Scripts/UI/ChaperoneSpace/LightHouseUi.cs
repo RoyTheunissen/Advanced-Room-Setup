@@ -13,7 +13,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             Debug.Log($"Started dragging lighthouse {name}");
         }
 
-        protected override void OnDrag(Vector2 position)
+        protected override void OnDrag(Vector3 position)
         {
             Debug.Log($"Dragging lighthouse {name} to {position}");
         }
