@@ -13,12 +13,14 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         public Renderer Renderer => renderer;
         
         [SerializeField] private LineRenderer dragLine;
+        [SerializeField] private Transform dragTarget;
 
         protected override void Awake()
         {
             base.Awake();
             
             dragLine.gameObject.SetActive(false);
+            dragTarget.gameObject.SetActive(false);
         }
 
         protected override void OnDragStart()
@@ -28,10 +30,8 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             dragLine.gameObject.SetActive(true);
         }
 
-        protected override void OnDrag(Vector3 position)
+        protected override void OnDrag(Vector3 position, List<ChaperoneSpaceUi> targets)
         {
-            Debug.Log($"Dragging lighthouse reference {name} to {position}");
-
             Vector3 from = transform.position;
             Vector3 to = position;
             to.y = from.y;
@@ -40,27 +40,51 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             float distance = delta.magnitude;
             Vector3 direction = delta / distance;
 
-            dragLine.transform.position = from;
+            dragLine.transform.position = from + Vector3.down;
             dragLine.transform.rotation = Quaternion.LookRotation(direction);
             dragLine.SetPosition(1, Vector3.forward * distance);
+            
+            LightHouseUi lightHouse = null;
+            for (int i = 0; i < targets.Count; i++)
+            {
+                LightHouseUi lightHouseUi = targets[i] as LightHouseUi;
+                if (lightHouseUi != null)
+                {
+                    lightHouse = lightHouseUi;
+                    break;
+                }
+            }
+
+            if (lightHouse != null)
+            {
+                dragTarget.gameObject.SetActive(true);
+                dragTarget.position = lightHouse.transform.position;
+                dragTarget.rotation = Quaternion.identity;
+            }
+            else
+                dragTarget.gameObject.SetActive(false);
+
+            Debug.Log(
+                $"Dragging lighthouse reference {name} to {position} over lighthouse {lightHouse}");
         }
 
         protected override void OnDropped(List<ChaperoneSpaceUi> chaperoneSpaceUis)
         {
             dragLine.gameObject.SetActive(false);
+            dragTarget.gameObject.SetActive(false);
             
-            LightHouseUi other = null;
+            LightHouseUi lightHouse = null;
             for (int i = 0; i < chaperoneSpaceUis.Count; i++)
             {
                 LightHouseUi lightHouseUi = chaperoneSpaceUis[i] as LightHouseUi;
                 if (lightHouseUi != null)
                 {
-                    other = lightHouseUi;
+                    lightHouse = lightHouseUi;
                     break;
                 }
             }
             
-            Debug.Log($"Dragged lighthouse reference onto lighthouse '{other}'");
+            Debug.Log($"Dragged lighthouse reference onto lighthouse '{lightHouse}'");
         }
 
         public void Deactivate()

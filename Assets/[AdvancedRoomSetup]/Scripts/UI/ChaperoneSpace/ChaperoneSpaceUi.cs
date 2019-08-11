@@ -117,7 +117,17 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
             Vector3 pointerWorldSpace =
                 chaperoneEditor.GetWorldSpacePointerPosition(pointerScreenSpace);
             
-            OnDrag(pointerWorldSpace);
+            dropTargets.Clear();
+            for (int i = 0; i < eventData.hovered.Count; i++)
+            {
+                ChaperoneSpaceUi dropTarget = eventData.hovered[i].GetComponent<ChaperoneSpaceUi>();
+                if (dropTarget == null)
+                    continue;
+                
+                dropTargets.Add(dropTarget);
+            }
+            
+            OnDrag(pointerWorldSpace, dropTargets);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -141,7 +151,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.UI.ChaperoneSpace
         {
         }
 
-        protected virtual void OnDrag(Vector3 position)
+        protected virtual void OnDrag(Vector3 position, List<ChaperoneSpaceUi> targets)
         {
         }
 
