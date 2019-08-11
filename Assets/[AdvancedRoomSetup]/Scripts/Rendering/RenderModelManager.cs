@@ -7,6 +7,7 @@ namespace RoyTheunissen.AdvancedRoomSetup.Rendering
 {
     /// <summary>
     /// Responsible for managing the render models of the various tracked VR objects.
+    /// Based on SteamVR_TrackedObject.
     /// </summary>
     public sealed class RenderModelManager : MonoBehaviour 
     {

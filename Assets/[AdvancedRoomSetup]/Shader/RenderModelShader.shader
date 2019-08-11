@@ -34,7 +34,7 @@
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
         // #pragma instancing_options assumeuniformscaling
         UNITY_INSTANCING_BUFFER_START(Props)
-            // put more per-instance properties here
+            UNITY_DEFINE_INSTANCED_PROP(fixed, _Glow)
         UNITY_INSTANCING_BUFFER_END(Props)
 
         void surf (Input IN, inout SurfaceOutputStandard o)
@@ -42,6 +42,7 @@
             // Albedo comes from a texture tinted by color
             //fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             fixed4 c = fixed4(0.4154902, 0.7019608, 0.05803919, 1); // Color picked from room setup, lol
+            c = lerp(c, fixed4(1, 1, 1, 1), _Glow);
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
