@@ -1,6 +1,8 @@
 # Advanced Room Setup
 SteamVR application that can perform quick Room Setups and save, load &amp; recontextualize play area data.
 
+[Video](https://www.youtube.com/watch?v=J9bRodZIDV8)
+
 ## Introduction
 
 I've been playing a lot of Beat Saber recently but I don't have a permanent VR setup, so I've had to re-calibrate a lot. I think Room Setup is really well optimized for letting users know what's happening and why it's necessary. As an advanced user I'm mostly interested in setting up a play area in as little steps as possible though and I don't need much explanation.
